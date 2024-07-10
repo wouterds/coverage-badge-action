@@ -12,6 +12,10 @@ inputs:
     description: 'The label for the badge'
     required: false
     default: 'coverage'
+  path:
+    description: 'The path to the coverage-summary.json file'
+    required: false
+    default: './coverage/coverage-summary.json'
 
 runs:
   using: composite
@@ -20,7 +24,7 @@ runs:
       id: get-values
       shell: bash
       run: |
-        COV=$(node -p 't=require(`./coverage/coverage-summary.json`).total,Math.min(...`lines|statements|functions|branches`.split(`|`).map(k=>t[k].pct))')
+        COV=$(node -p 't=require(`${{ inputs.path }}`).total,Math.min(...`lines|statements|functions|branches`.split(`|`).map(k=>t[k].pct))')
         echo "coverage=$COV" >> $GITHUB_OUTPUT
 
     - name: Checkout gh-pages
