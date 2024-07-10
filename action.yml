@@ -7,6 +7,12 @@ branding:
   icon: check-circle
   color: green
 
+inputs:
+  label:
+    description: 'The label for the badge'
+    required: false
+    default: 'coverage'
+
 runs:
   using: composite
   steps:
@@ -29,7 +35,7 @@ runs:
         export COV=${{ steps.get-values.outputs.coverage }}
         COLOR=$(node -p '+process.env.COV >= 95 ? `green` : `orange`')
         mkdir -p badges
-        badgen -j coverage -s $COV% -c $COLOR > badges/coverage.svg
+        badgen -j ${{ inputs.label }} -s $COV% -c $COLOR > badges/coverage.svg
 
     - name: Deploy Badges
       uses: stefanzweifel/git-auto-commit-action@v4
