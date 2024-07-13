@@ -49,7 +49,7 @@ runs:
         branch: gh-pages
         skip_fetch: true
         skip_checkout: true
-        file_pattern: badges/**/*.svg
+        file_pattern: badges/**
         commit_message: "chore: update coverage badge for ${{ steps.get-values.outputs.branch }}"
         commit_options: '--no-verify --signoff'
 
