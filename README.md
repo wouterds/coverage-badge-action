@@ -1,6 +1,6 @@
 # github-coverage-badge-action
 
-Simple coverage badge that doesn't require external services or hosting.
+Simple coverage badge that doesn't require external services or hosting, using just GitHub Actions.
 
 ### Credits
 

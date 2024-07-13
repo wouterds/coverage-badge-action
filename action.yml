@@ -1,5 +1,5 @@
-name: GitHub Coverage Badge
-description: Coverage badge, no external services or hosting required.
+name: GitHub Coverage Badge Action
+description: Simple coverage badge that doesn't require external services or hosting, using just GitHub Actions.
 
 branding:
   icon: check-circle
