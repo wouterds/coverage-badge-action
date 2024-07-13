@@ -18,8 +18,11 @@ runs:
       id: get-values
       shell: bash
       run: |
-        COV=$(node -p 't=require(`./coverage/coverage-summary.json`).total,Math.min(...`lines|statements|functions|branches`.split(`|`).map(k=>t[k].pct))')
-        echo "coverage=$COV" >> $GITHUB_OUTPUT
+        COVERAGE=$(node -p 't=require(`./coverage/coverage-summary.json`).total,Math.min(...`lines|statements|functions|branches`.split(`|`).map(k=>t[k].pct))')
+        BRANCH=${GITHUB_REF#refs/heads/}
+        echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+        echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+        echo -e "\033[33mcoverage: $COVERAGE, branch: $BRANCH"
 
     - name: checkout
       uses: actions/checkout@v4
@@ -29,10 +32,11 @@ runs:
     - name: create-badge
       shell: bash
       run: |
-        export COV=${{ steps.get-values.outputs.coverage }}
-        COLOR=$(node -p '+process.env.COV >= 90 ? `brightgreen` : process.env.COV >= 80 ? `green` : process.env.COV >= 50 ? `orange` : `red`')
-        mkdir -p badges
-        npx --yes badge-maker@^4 "${{ inputs.label }}" "$COV%" :brightgreen > badges/coverage.svg
+        export COVERAGE=${{ steps.get-values.outputs.coverage }}
+        export BRANCH=${{ steps.get-values.outputs.branch }}
+        COLOR=$(node -p '+process.env.COVERAGE >= 90 ? `brightgreen` : process.env.COVERAGE >= 80 ? `green` : process.env.COVERAGE >= 50 ? `orange` : `red`')
+        mkdir -p badges/$BRANCH
+        npx --yes badge-maker@^4 "${{ inputs.label }}" "$COVERAGE%" :brightgreen > "badges/$BRANCH/coverage.svg"
 
     - name: deploy-badge
       uses: stefanzweifel/git-auto-commit-action@v4
@@ -40,8 +44,8 @@ runs:
         branch: gh-pages
         skip_fetch: true
         skip_checkout: true
-        file_pattern: badges/**.svg
-        commit_message: "chore: update coverage badge"
+        file_pattern: badges/**/*.svg
+        commit_message: "chore: update coverage badge for ${{ steps.get-values.outputs.branch }}"
         commit_options: '--no-verify --signoff'
 
     - name: cleanup
