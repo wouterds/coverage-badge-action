@@ -1,8 +1,6 @@
-name: Coverage Badge
-description: Badges for test results and code coverage
+name: GitHub Coverage Badge
+description: Coverage badge, no external services or hosting required.
 
-# Required for publishing to the marketplace:
-# Improve your Action by adding labels for icon and color.
 branding:
   icon: check-circle
   color: green
@@ -12,47 +10,41 @@ inputs:
     description: 'The label for the badge'
     required: false
     default: 'coverage'
-  folder:
-    description: 'The folder containing the coverage/coverage-summary.json file'
-    required: false
-    default: '.'
 
 runs:
   using: composite
   steps:
-    - name: Get Values
+    - name: get-values
       id: get-values
       shell: bash
       run: |
-        COV=$(node -p 't=require(`./${{ inputs.folder }}/coverage/coverage-summary.json`).total,Math.min(...`lines|statements|functions|branches`.split(`|`).map(k=>t[k].pct))')
+        COV=$(node -p 't=require(`./coverage/coverage-summary.json`).total,Math.min(...`lines|statements|functions|branches`.split(`|`).map(k=>t[k].pct))')
         echo "coverage=$COV" >> $GITHUB_OUTPUT
 
-    - name: Checkout gh-pages
-      uses: actions/checkout@v3
+    - name: checkout
+      uses: actions/checkout@v4
       with:
         ref: gh-pages
 
-    - name: Create Badges
+    - name: create-badge
       shell: bash
       run: |
-        npm i -g badgen-cli
         export COV=${{ steps.get-values.outputs.coverage }}
-        COLOR=$(node -p '+process.env.COV >= 95 ? `green` : `orange`')
+        COLOR=$(node -p '+process.env.COV >= 90 ? `brightgreen` : process.env.COV >= 80 ? `green` : process.env.COV >= 50 ? `orange` : `red`')
         mkdir -p badges
-        badgen -j "${{ inputs.label }}/coverage/coverage-summary.json" -s $COV% -c $COLOR > badges/coverage.svg
+        npx --yes badge-maker@^4 "${{ inputs.label }}" "$COV%" :brightgreen > badges/coverage.svg
 
-    - name: Deploy Badges
+    - name: deploy-badge
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_message: "Update badges [skip ci]"
         branch: gh-pages
         skip_fetch: true
         skip_checkout: true
+        file_pattern: badges/**.svg
+        commit_message: "chore: update coverage badge"
+        commit_options: '--no-verify --signoff'
 
-    # Without this, will get Error:
-    # Can't find 'action.yml', 'action.yaml' or 'Dockerfile' under '/home/runner/work/coverage-badge-action/coverage-badge-action/action.yml'.
-    # Did you forget to run actions/checkout before running your local action?
-    - name: Checkout Back
-      uses: actions/checkout@v3
+    - name: cleanup
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.ref }}
