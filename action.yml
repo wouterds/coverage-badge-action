@@ -38,9 +38,10 @@ runs:
       run: |
         export COVERAGE=${{ steps.get-values.outputs.coverage }}
         export BRANCH=${{ steps.get-values.outputs.branch }}
-        COLOR=$(node -p '+process.env.COVERAGE >= 90 ? `brightgreen` : process.env.COVERAGE >= 80 ? `green` : process.env.COVERAGE >= 50 ? `orange` : `red`')
+        COLOR=$(node -p 'process.env.COVERAGE >= 80 ? `green` : process.env.COVERAGE >= 50 ? `orange` : `red`')
         mkdir -p badges/$BRANCH
-        npx --yes badge-maker@^4 "${{ inputs.label }}" "$COVERAGE%" :brightgreen > "badges/$BRANCH/coverage.svg"
+        npx --yes badgen-cli@^0.2 --subject ${{ inputs.label }} --status "$COVERAGE%" --color $COLOR > "badges/$BRANCH/coverage.svg"
+        echo -e "\033[32mgenerated badges/$BRANCH/coverage.svg"
 
     - name: deploy-badge
       uses: stefanzweifel/git-auto-commit-action@v4
