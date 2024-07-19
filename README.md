@@ -32,7 +32,7 @@ permissions:
 
 ```yaml
 - name: Coverage badge
-  uses: wouterds/github-coverage-badge-action@v1
+  uses: wouterds/github-coverage-badge-action@v1.0.1
 ```
 
 ### Options
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/setup-node@v4
       - run: npm ci
       - run: npm run test
-      - uses: wouterds/github-coverage-badge-action@v1
+      - uses: wouterds/github-coverage-badge-action@v1.0.1
 ```
 
 ### Credits
