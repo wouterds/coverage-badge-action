@@ -1,3 +1,6 @@
 {
-  "name": "@wouterds/github-coverage-badge-action"
+  "name": "@wouterds/github-coverage-badge-action",
+  "dependencies": {
+    "badge-maker": "^4.0.0"
+  }
 }
