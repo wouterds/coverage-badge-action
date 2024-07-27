@@ -2,5 +2,9 @@
   "name": "@wouterds/github-coverage-badge-action",
   "dependencies": {
     "badge-maker": "^4.0.0"
+  },
+  "engines": {
+    "node": "^20",
+    "npm": "^10.8"
   }
 }
