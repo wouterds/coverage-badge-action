@@ -7,13 +7,13 @@ branding:
 
 inputs:
   label:
-    description: 'The label for the badge'
+    description: "The label for the badge"
     required: false
-    default: 'coverage'
+    default: "coverage"
   coverage-summary-path:
-    description: 'The path to the coverage summary file'
+    description: "The path to the coverage summary file"
     required: false
-    default: './coverage/coverage-summary.json'
+    default: "./coverage/coverage-summary.json"
 
 runs:
   using: composite
@@ -51,7 +51,7 @@ runs:
         skip_checkout: true
         file_pattern: badges/**
         commit_message: "chore: update coverage badge for ${{ steps.get-values.outputs.branch }}"
-        commit_options: '--no-verify --signoff'
+        commit_options: "--no-verify --signoff"
 
     - name: cleanup
       uses: actions/checkout@v4
