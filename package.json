@@ -1,7 +1,12 @@
 {
   "name": "@wouterds/github-coverage-badge-action",
+  "main": "index.js",
+  "type": "module",
   "dependencies": {
     "badge-maker": "^4.0.0"
+  },
+  "scripts": {
+    "start": "node index.js"
   },
   "engines": {
     "node": "^20",
