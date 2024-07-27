@@ -1,13 +1,10 @@
 {
   "name": "@wouterds/github-coverage-badge-action",
-  "main": "index.js",
+  "main": "action.js",
   "type": "module",
   "dependencies": {
     "badge-maker": "^4.0.0",
     "yargs": "^17.7.2"
-  },
-  "scripts": {
-    "generate": "node index.js"
   },
   "engines": {
     "node": "^20",
