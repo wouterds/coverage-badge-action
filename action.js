@@ -1,27 +1,24 @@
 import fs from 'fs';
 import { makeBadge } from 'badge-maker';
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
+import core from '@actions/core';
+import github from '@actions/github';
 
-const args = yargs(hideBin(process.argv)).argv;
-const label = args.label || 'coverage';
-const coverage = parseInt(args.coverage);
-const style = args.style || 'github';
+const label = core.getInput('label');
+const path = core.getInput('coverage-summary-path');
+const style = core.getInput('style');
 
-if (!label || !style || !coverage) {
-  console.error('Missing required arguments');
+const styles = ['github', 'classic'];
+if (!styles.includes(style)) {
+  core.setFailed(`invalid style, expected one of [${styles.join(', ')}]`);
   process.exit(1);
 }
 
-if (isNaN(coverage)) {
-  console.error('Coverage must be a number');
-  process.exit(1);
-}
+const branch = github.context.ref.split('refs/heads/').pop();
+core.info(`branch: ${branch}`);
 
-if (!['github', 'classic'].includes(style)) {
-  console.error('Invalid style');
-  process.exit(1);
-}
+const report = JSON.parse(fs.readFileSync(path, 'utf8'));
+const coverage = Math.min(...`lines|statements|functions|branches`.split(`|`).map((k) => report.total[k].pct), 0);
+core.info(`coverage: ${coverage}%`);
 
 let color = 'red';
 if (coverage >= 90) {

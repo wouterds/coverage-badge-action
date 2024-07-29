@@ -20,48 +20,29 @@ inputs:
     default: "github"
 
 runs:
-  using: node20
-  main: "index.js"
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
 
-# runs:
-#   using: composite
-#   steps:
-#     - name: get-values
-#       id: get-values
-#       shell: bash
-#       run: |
-#         COVERAGE=$(node -p 't=require(`${{ inputs.coverage-summary-path }}`).total,Math.min(...`lines|statements|functions|branches`.split(`|`).map(k=>t[k].pct))')
-#         BRANCH=${GITHUB_REF#refs/heads/}
-#         echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
-#         echo "branch=$BRANCH" >> $GITHUB_OUTPUT
-#         echo -e "\033[33mcoverage: $COVERAGE, branch: $BRANCH"
+    - uses: ./node-action
+      with:
+        label: ${{ inputs.label }}
+        coverage-summary-path: ${{ inputs.coverage-summary-path }}
+        style: ${{ inputs.style }}
 
-#     - name: checkout
-#       uses: actions/checkout@v4
-#       with:
-#         ref: gh-pages
+    - uses: actions/checkout@v4
+      with:
+        ref: gh-pages
 
-#     - name: create-badge
-#       shell: bash
-#       run: |
-#         export COVERAGE=${{ steps.get-values.outputs.coverage }}
-#         export BRANCH=${{ steps.get-values.outputs.branch }}
-#         COLOR=$(node -p 'process.env.COVERAGE >= 80 ? `green` : process.env.COVERAGE >= 50 ? `orange` : `red`')
-#         mkdir -p badges/$BRANCH
-#         npx --yes badgen-cli@^0.2 --subject ${{ inputs.label }} --status "$COVERAGE%" --color $COLOR > "badges/$BRANCH/coverage.svg"
-#         echo -e "\033[32mgenerated badges/$BRANCH/coverage.svg"
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        branch: gh-pages
+        skip_fetch: true
+        skip_checkout: true
+        file_pattern: badges/**
+        commit_message: "chore(badge): update coverage badge"
+        commit_options: "--no-verify"
 
-#     - name: deploy-badge
-#       uses: stefanzweifel/git-auto-commit-action@v4
-#       with:
-#         branch: gh-pages
-#         skip_fetch: true
-#         skip_checkout: true
-#         file_pattern: badges/**
-#         commit_message: "chore: update coverage badge for ${{ steps.get-values.outputs.branch }}"
-#         commit_options: "--no-verify --signoff"
-
-#     - name: cleanup
-#       uses: actions/checkout@v4
-#       with:
-#         ref: ${{ github.ref }}
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.ref }}

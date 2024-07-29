@@ -1,0 +1,11 @@
+inputs:
+  label:
+    required: true
+  coverage-summary-path:
+    required: true
+  style:
+    required: true
+
+runs:
+  using: node20
+  main: "index.js"
